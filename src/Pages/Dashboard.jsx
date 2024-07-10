@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import AddStudentModal from "../Components/AddStudentModal";
 import AddUserModel from "../Components/AddUserModel";
 import ConsultancyApplications from "../Components/ConsultancyApplications";
+import baseURL from "../Common/Api"
+
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -66,7 +68,7 @@ const Dashboard = () => {
   const fetchStudents = async () => {
     try {
       const response = await axios.get(
-        "https://tekisky-pvt-ltd-backend.vercel.app/selectedStudent/getSelectedStudent",
+        `${baseURL}selectedStudent/getSelectedStudent`,
         {
           headers: {
             Authorization: token,
@@ -90,7 +92,7 @@ const Dashboard = () => {
   const fetchUsers = async () => {
     try {
       const response = await axios.get(
-        "https://tekisky-pvt-ltd-backend.vercel.app/user/getAllUsers",
+        `${baseURL}user/getAllUsers`,
         {
           headers: {
             Authorization: token,
@@ -122,7 +124,7 @@ const Dashboard = () => {
     if (confirmed.isConfirmed) {
       try {
         await axios.delete(
-          `https://tekisky-pvt-ltd-backend.vercel.app/user/delete/${id}`,
+          `${baseURL}user/delete/${id}`,
           {
             headers: {
               Authorization: token,
@@ -152,7 +154,7 @@ const Dashboard = () => {
     if (confirmed.isConfirmed) {
       try {
         await axios.delete(
-          `https://tekisky-pvt-ltd-backend.vercel.app/selectedStudent/delete/${id}`,
+          `${baseURL}selectedStudent/delete/${id}`,
           {
             headers: {
               Authorization: token,
@@ -191,7 +193,7 @@ const Dashboard = () => {
   const handleSaveStudent = async (index, id) => {
     try {
       await axios.put(
-        `https://tekisky-pvt-ltd-backend.vercel.app/selectedStudent/update/${id}`,
+        `${baseURL}selectedStudent/update/${id}`,
         editedStudent,
         {
           headers: {

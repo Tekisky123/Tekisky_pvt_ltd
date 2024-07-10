@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes, Navigate } from 'react-router-dom';
 import './App.css';
 import Header from './Components/Header';
 import Home from './Pages/Home';
@@ -13,12 +13,16 @@ import ContactForm from './Pages/ContactForm';
 import Login from './Pages/Login';
 import Dashboard from './Pages/Dashboard';
 import SingleApplication from './Pages/SingleApplication';
-import AssignAssisment from './Pages/AssignAssisment';
-import SubmitAssessment from './Pages/SubmitAssisment';
 import ScrollUp from './Common/ScrollUp';
 import ProtectedRoute from './Common/ProtectedRoute';
+import TeacherDashboard from './Pages/TeacherDashboard';
+import SubmitAssessment from './Pages/SubmitAssessment';
+import AssignAssisment from './Pages/AssignAssisment';
+
 
 function App() {
+  const userType = localStorage.getItem("userType");
+
   return (
     <div className="App">
       <Header/>
@@ -37,8 +41,12 @@ function App() {
         <Route path="/singleApplication/:id" element={<SingleApplication/>}/>
         
         {/* Protected Routes */}
-        <Route path="/dashboard" element={<ProtectedRoute element={Dashboard}/>} />
-        <Route path="/assign-Assisment/:id" element={<ProtectedRoute element={AssignAssisment}/>} />
+        {userType === "admin" && <Route path="/dashboard" element={<ProtectedRoute element={Dashboard}/>} />}
+        {userType === "admin" && <Route path="/assign-Assisment/:id" element={<ProtectedRoute element={AssignAssisment}/>} />}
+        {userType === "teacher" && <Route path="/teacherDashboard/:userId" element={<ProtectedRoute element={TeacherDashboard}/>} />}
+        
+        {/* Redirect to login if userType is not admin or teacher */}
+        {!userType && <Navigate to="/login" />}
       </Routes>
       <Footer/>
     </div>

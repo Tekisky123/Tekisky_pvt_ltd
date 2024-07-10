@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import boy from "../images/blog/boy (2).png";
 import girl from "../images/blog/woman.png";
 import Breadcrumb from "../Common/Breadcrumb";
+import baseURL from "../Common/Api"
+
 
 // SkeletonLoadingCard Component
 const SkeletonLoadingCard = () => {
@@ -67,7 +69,7 @@ const Alumni = () => {
   useEffect(() => {
     axios
       .get(
-        "https://tekisky-pvt-ltd-backend.vercel.app/selectedStudent/getSelectedStudent"
+        `${baseURL}selectedStudent/getSelectedStudent`
       )
       .then((response) => {
         const reversedData = response.data.reverse();

@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ToastNotification from "../Loader/ToastNotification";
 import { FaFileDownload, FaFolderOpen, FaShareAltSquare } from "react-icons/fa";
 import { MdAssignmentAdd, MdDelete } from "react-icons/md";
+import baseURL from "../Common/Api";
 
 const ConsultancyApplications = () => {
   const [applicants, setApplicants] = useState([]);
@@ -19,7 +20,7 @@ const ConsultancyApplications = () => {
       const storedToken = localStorage.getItem("token");
       if (storedToken) {
         const response = await axios.get(
-          "https://tekisky-pvt-ltd-backend.vercel.app/consultancy/getAllUploadResume",
+          `${baseURL}consultancy/getAllUploadResume`,
           {
             headers: {
               Authorization: storedToken,
@@ -41,7 +42,7 @@ const ConsultancyApplications = () => {
   const handleViewMore = async (applicant) => {
     try {
       const response = await axios.get(
-        `https://tekisky-pvt-ltd-backend.vercel.app/consultancy/getoneuploadresume/${applicant._id}`
+        `${baseURL}consultancy/getoneuploadresume/${applicant._id}`
       );
       const data = response.data;
       console.log("Fetched applicant details:", data);
@@ -70,7 +71,7 @@ const ConsultancyApplications = () => {
         });
 
         await axios.post(
-          `https://tekisky-pvt-ltd-backend.vercel.app/consultancy/getoneuploadresumeandupdate/${selectedApplicant._id}`,
+          `${baseURL}getoneuploadresumeandupdate/${selectedApplicant._id}`,
           {
             rating: selectedApplicant.rating,
             status: selectedApplicant.status,
@@ -179,7 +180,7 @@ const ConsultancyApplications = () => {
           });
 
           await axios.delete(
-            `https://tekisky-pvt-ltd-backend.vercel.app/consultancy/deleteoneuploadresume/${applicantId}`,
+            `${baseURL}consultancy/deleteoneuploadresume/${applicantId}`,
             {
               headers: {
                 Authorization: storedToken,
@@ -531,271 +532,293 @@ const ConsultancyApplications = () => {
       )}
 
       {selectedApplicant && (
-        <div className="model-body fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="w-full max-w-md rounded-lg bg-white p-8">
-            <h2 className="mb-4 text-2xl font-bold">
-              {selectedApplicant.fullName}
-            </h2>
-            <div className="mb-6">
-              <table className="w-full border-collapse border border-gray-800">
-                <tbody>
-                  <tr className="bg-gray-200">
-                    <td className="border border-gray-800 px-4 py-2 font-bold">
-                      Field
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2 font-bold">
-                      Value
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">Email</td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.email}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Mobile Number
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.mobileNumber}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Employee Number
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.employeeNumber}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Tenth Percentage
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.tenthPercentage}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Twelth Percentage
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.twelthPercentage}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Twelth College Name
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.twelthCollegeName}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Diploma Percentage
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.diplomaPercentage}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Diploma College Name
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.diplomaCollegeName}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Degree Name
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.degreeName}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Degree Percentage
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.degreePercentage}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Degree College Name
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.degreeCollegeName}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Year Of Passing
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.yearOfPassing}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="border border-gray-800 px-4 py-2">
-                      Interested In Mock Interview
-                    </td>
-                    <td className="border border-gray-800 px-4 py-2">
-                      {selectedApplicant.interestedInMockInterview
-                        ? "Yes"
-                        : "No"}
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+        <div className="fixed inset-0 overflow-y-auto mt-20">
+          <div className="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="fixed inset-0 transition-opacity">
+              <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
+            <span className="hidden sm:inline-block sm:align-middle sm:h-screen">
+              &#8203;
+            </span>
+            <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+              <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <div className="sm:flex sm:items-start">
+                  <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
+                    <h3 className="text-lg leading-6 font-medium text-gray-900">
+                      Application Details
+                    </h3>
+                    <div className="mt-2">
+                      <table className="min-w-full divide-y divide-gray-200">
+                        <tbody className="bg-white divide-y text-start divide-gray-200">
+                          <tr>
+                            <td className="px-2 py-4  whitespace-nowrap text-sm font-medium text-gray-900">
+                              Name:
+                            </td>
+                            <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.fullName}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Email:
+                            </td>
+                            <td className="px-2 py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.email}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Mobile Number:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.mobileNumber}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Employee Id:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.employeeNumber}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Tenth Percentage:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.tenthPercentage}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Twelth Percentage:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.twelthPercentage}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Twelth College:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.twelthCollegeName}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Diploma Percentage:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.diplomaPercentage}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Diploma College:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.diplomaCollegeName}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Degree Name:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.degreeName}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Degree Percentage:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.degreePercentage}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Degree College:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.degreeCollegeName}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Year Of Passing:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.yearOfPassing}
+                            </td>
+                          </tr>
+                          <tr>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                              Interested In Mock Interview:
+                            </td>
+                            <td className="px-2  py-4 whitespace-nowrap text-sm text-gray-500">
+                              {selectedApplicant.interestedInMockInterview
+                                ? "Yes"
+                                : "No"}
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
 
-            <div className="mb-4">
-              <label className="mb-2 block font-bold" htmlFor="rating">
-                Rating:
-              </label>
-              <select
-                id="rating"
-                value={selectedApplicant.rating ?? ""}
-                onChange={(e) =>
-                  handleFieldChange("rating", parseInt(e.target.value))
-                }
-                className="w-full rounded border border-gray-300 px-3 py-2"
-              >
-                <option value="" disabled>
-                  Select rating
-                </option>
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </div>
+                    <div className="mt-4">
+                      <label className="mb-2 block font-bold" htmlFor="rating">
+                        Rating:
+                      </label>
+                      <select
+                        id="rating"
+                        value={selectedApplicant.rating ?? ""}
+                        onChange={(e) =>
+                          handleFieldChange("rating", parseInt(e.target.value))
+                        }
+                        className="w-full rounded border border-gray-300 px-3 py-2"
+                      >
+                        <option value="" disabled>
+                          Select rating
+                        </option>
+                        {[1, 2, 3, 4, 5].map((value) => (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-            <div className="mb-4">
-              <label
-                className="mb-2 block font-bold"
-                htmlFor="communicationSkillRating"
-              >
-                Communication Skills Rating:
-              </label>
-              <select
-                id="communicationSkillRating"
-                value={selectedApplicant.communicationSkillRating ?? ""}
-                onChange={(e) =>
-                  handleFieldChange(
-                    "communicationSkillRating",
-                    parseInt(e.target.value)
-                  )
-                }
-                className="w-full rounded border border-gray-300 px-3 py-2"
-              >
-                <option value="" disabled>
-                  Select rating
-                </option>
-                {[1, 2, 3, 4, 5].map((value) => (
-                  <option key={value} value={value}>
-                    {value}
-                  </option>
-                ))}
-              </select>
-            </div>
+                    <div className="mt-4">
+                      <label
+                        className="mb-2 block font-bold"
+                        htmlFor="communicationSkillRating"
+                      >
+                        Communication Skills Rating:
+                      </label>
+                      <select
+                        id="communicationSkillRating"
+                        value={selectedApplicant.communicationSkillRating ?? ""}
+                        onChange={(e) =>
+                          handleFieldChange(
+                            "communicationSkillRating",
+                            parseInt(e.target.value)
+                          )
+                        }
+                        className="w-full rounded border border-gray-300 px-3 py-2"
+                      >
+                        <option value="" disabled>
+                          Select rating
+                        </option>
+                        {[1, 2, 3, 4, 5].map((value) => (
+                          <option key={value} value={value}>
+                            {value}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
 
-            <div className="mb-4">
-              <label
-                className="mb-2 block font-bold"
-                htmlFor="technicalRoundComments"
-              >
-                Technical Round Comments:
-              </label>
-              <textarea
-                id="technicalRoundComments"
-                value={selectedApplicant.technicalRoundComments || ""}
-                onChange={(e) =>
-                  handleFieldChange("technicalRoundComments", e.target.value)
-                }
-                className="w-full rounded border px-4 py-2"
-              />
-            </div>
+                    <div className="mt-4">
+                      <label
+                        className="mb-2 block font-bold"
+                        htmlFor="technicalRoundComments"
+                      >
+                        Technical Round Comments:
+                      </label>
+                      <textarea
+                        id="technicalRoundComments"
+                        value={selectedApplicant.technicalRoundComments || ""}
+                        onChange={(e) =>
+                          handleFieldChange(
+                            "technicalRoundComments",
+                            e.target.value
+                          )
+                        }
+                        className="w-full rounded border px-4 py-2"
+                      />
+                    </div>
 
-            <div className="mb-4">
-              <label className="mb-2 block font-bold" htmlFor="comments">
-                Comments:
-              </label>
-              <textarea
-                id="comments"
-                value={selectedApplicant.comments || ""}
-                onChange={(e) => handleFieldChange("comments", e.target.value)}
-                className="w-full rounded border px-4 py-2"
-              />
-            </div>
+                    <div className="mt-4">
+                      <label
+                        className="mb-2 block font-bold"
+                        htmlFor="comments"
+                      >
+                        Comments:
+                      </label>
+                      <textarea
+                        id="comments"
+                        value={selectedApplicant.comments || ""}
+                        onChange={(e) =>
+                          handleFieldChange("comments", e.target.value)
+                        }
+                        className="w-full rounded border px-4 py-2"
+                      />
+                    </div>
 
-            <div className="mb-4">
-              <label className="mb-2 block font-bold" htmlFor="status">
-                Status:
-              </label>
-              <select
-                id="status"
-                value={selectedApplicant.status ?? ""}
-                onChange={(e) => handleFieldChange("status", e.target.value)}
-                className="w-full rounded border border-gray-300 px-3 py-2"
-              >
-                <option value="" disabled>
-                  Select status
-                </option>
-                {[
-                  "Verified",
-                  "New",
-                  "Rejected",
-                  "Mock Interview Done",
-                  "Assessment Assigned",
-                  "Assessment Submitted",
-                ].map((status) => (
-                  <option key={status} value={status}>
-                    {status}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {selectedApplicant.status === "Mock Interview Done" && (
-              <div className="mb-4">
-                <label
-                  className="mb-2 block font-bold"
-                  htmlFor="mockInterviewFeedback"
-                >
-                  Mock Interview Feedback:
-                </label>
-                <textarea
-                  id="mockInterviewFeedback"
-                  value={selectedApplicant.mockInterviewFeedback || ""}
-                  onChange={(e) =>
-                    handleFieldChange("mockInterviewFeedback", e.target.value)
-                  }
-                  className="w-full rounded border px-4 py-2"
-                />
+                    <div className="mt-4">
+                      <label className="mb-2 block font-bold" htmlFor="status">
+                        Status:
+                      </label>
+                      <select
+                        id="status"
+                        value={selectedApplicant.status ?? ""}
+                        onChange={(e) =>
+                          handleFieldChange("status", e.target.value)
+                        }
+                        className="w-full rounded border border-gray-300 px-3 py-2"
+                      >
+                        <option value="" disabled>
+                          Select status
+                        </option>
+                        {[
+                          "Verified",
+                          "New",
+                          "Rejected",
+                          "Mock Interview Done",
+                          "Assessment Assigned",
+                          "Assessment Submitted",
+                        ].map((status) => (
+                          <option key={status} value={status}>
+                            {status}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {selectedApplicant.status === "Mock Interview Done" && (
+                      <div className="mb-4">
+                        <label
+                          className="mb-2 block font-bold"
+                          htmlFor="mockInterviewFeedback"
+                        >
+                          Mock Interview Feedback:
+                        </label>
+                        <textarea
+                          id="mockInterviewFeedback"
+                          value={selectedApplicant.mockInterviewFeedback || ""}
+                          onChange={(e) =>
+                            handleFieldChange(
+                              "mockInterviewFeedback",
+                              e.target.value
+                            )
+                          }
+                          className="w-full rounded border px-4 py-2"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
-            )}
-
-            <div className="flex justify-end">
-              <button
-                onClick={handleCloseModal}
-                className="mr-2 rounded-md bg-gray-500 px-4 py-2 text-white hover:bg-gray-600"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveChanges}
-                className="rounded-md bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-              >
-                Save Changes
-              </button>
+              <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <button
+                  type="button"
+                  className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
+                  onClick={() => setSelectedApplicant(null)}
+                >
+                  Close
+                </button>
+              </div>
             </div>
           </div>
         </div>

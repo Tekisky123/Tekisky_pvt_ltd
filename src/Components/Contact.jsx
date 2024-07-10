@@ -3,6 +3,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import LoaderSmall from "../Loader/LoaderSmall";
 import img1 from "../images/about/Contact us-bro.svg"
+import baseURL from "../Common/Api"
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -47,7 +48,7 @@ const Contact = () => {
     setShowLoader(true);
     try {
       const response = await axios.post(
-        "https://tekisky-pvt-ltd-backend.vercel.app/email/sendEmail",
+        `${baseURL}email/sendEmail`,
         formData
       );
       if (response.status === 200) {

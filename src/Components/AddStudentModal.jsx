@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import LoaderSmall from "../Loader/LoaderSmall";
+import baseURL from "../Common/Api"
 
 
 const AddStudentModal = ({ showModal, onClose,fetchStudents }) => {
@@ -36,7 +37,7 @@ const AddStudentModal = ({ showModal, onClose,fetchStudents }) => {
     setShowLoader(true);
     try {
       const response = await axios.post(
-        "https://tekisky-pvt-ltd-backend.vercel.app/selectedStudent/create",
+        `${baseURL}selectedStudent/create`,
         formData,
         {
           headers: {

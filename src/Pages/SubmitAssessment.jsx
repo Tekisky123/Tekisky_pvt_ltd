@@ -1,8 +1,9 @@
-"use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import { useNavigate, useParams } from "react-router-dom";
+import baseURL from "../Common/Api"
+
 
 const SubmitAssessment = () => {
   const [file, setFile] = useState(null);
@@ -39,7 +40,7 @@ const SubmitAssessment = () => {
       });
 
       const response = await axios.post(
-        `https://tekisky-pvt-ltd-backend.vercel.app/consultancy/submitAssessment/${id}`,
+        `${baseURL}consultancy/submitAssessment/${id}`,
         formData,
         {
           headers: {

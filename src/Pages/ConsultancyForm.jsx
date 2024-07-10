@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import fullStackSkills from "../Components/fullStackSkills";
 import Loader from "../Loader/Loader";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import CollegeNames from "../Common/CollegeNames.json";
+import baseURL from "../Common/Api"
+
 
 const ConsultancyForm = () => {
   const [loading, setLoading] = useState(false);
@@ -12,7 +15,8 @@ const ConsultancyForm = () => {
   const [filteredSkills, setFilteredSkills] = useState([]);
   const [selectedSkills, setSelectedSkills] = useState([]);
   const [selectedResumeName, setSelectedResumeName] = useState("");
-
+  const [filteredColleges, setFilteredColleges] = useState([]);
+  const [selectedCollege, setSelectedCollege] = useState("");
 
   const handleFileSelect = (event) => {
     const selectedFile = event.currentTarget.files[0];
@@ -41,13 +45,13 @@ const ConsultancyForm = () => {
       .max(100, "Please enter a valid percentage (up to 100).")
       .nullable(),
     twelthCollegeName: Yup.string()
-      .max(50, "College name must be less than 50 characters.")
+      .max(100, "College name must be less than 100 characters.")
       .nullable(),
     diplomaPercentage: Yup.number()
       .max(100, "Please enter a valid percentage (up to 100).")
       .nullable(),
     diplomaCollegeName: Yup.string()
-      .max(50, "College name must be less than 50 characters.")
+      .max(100, "College name must be less than 100 characters.")
       .nullable(),
     degreePercentage: Yup.number()
       .max(100, "Please enter a valid percentage (up to 100).")
@@ -56,7 +60,7 @@ const ConsultancyForm = () => {
       .max(20, "Degree name must be less than 20 characters.")
       .nullable(),
     degreeCollegeName: Yup.string()
-      .max(50, "College name must be less than 50 characters.")
+      .max(100, "College name must be less than 100 characters.")
       .nullable(),
     yearOfPassing: Yup.string().required("Year of passing is required"),
     skills: Yup.array().required("Skills are required"),
@@ -140,7 +144,7 @@ const ConsultancyForm = () => {
           }
         }
         await axios.post(
-          "https://tekisky-pvt-ltd-backend.vercel.app/consultancy/uploadResume",
+          `${baseURL}consultancy/uploadResume`,
           formDataToSend
         );
         localStorage.removeItem("formData");
@@ -172,7 +176,7 @@ const ConsultancyForm = () => {
   };
 
   const filterSkills = (value) => {
-    if (value.trim() === "") {
+    if (value.trim() === '') {
       setFilteredSkills([]);
     } else {
       const filtered = fullStackSkills.filter((skill) =>
@@ -184,19 +188,38 @@ const ConsultancyForm = () => {
 
   const handleSkillSelect = (skill) => {
     setSelectedSkills([...selectedSkills, skill]);
-    setSearchTerm("");
+    setSearchTerm('');
     setFilteredSkills([]);
-    formik.setFieldValue("skills", [...selectedSkills, skill]);
+    formik.setFieldValue('skills', [...selectedSkills, skill]); // Update formik skills field
   };
 
   const handleSkillRemove = (skill) => {
     setSelectedSkills(selectedSkills.filter((s) => s !== skill));
     formik.setFieldValue(
-      "skills",
+      'skills',
       selectedSkills.filter((s) => s !== skill)
-    );
+    ); // Update formik skills field
   };
 
+  const handleInputChange = (event) => {
+    const inputText = event.target.value;
+    setSelectedCollege(inputText); // Update selected college
+
+    if (inputText.trim() === '') {
+      setFilteredColleges([]);
+    } else {
+      const filtered = CollegeNames['Nanded-District'].filter((college) =>
+        college.NameoftheCollege.toLowerCase().includes(inputText.toLowerCase())
+      );
+      setFilteredColleges(filtered);
+    }
+  };
+
+  const handleOptionClick = (collegeName) => {
+    setSelectedCollege(collegeName);
+    setFilteredColleges([]);
+    formik.setFieldValue('referredBy', collegeName); // Update formik referredBy field
+  };
   const generateYears = () => {
     const currentYear = new Date().getFullYear();
     const years = [];
@@ -895,7 +918,6 @@ const ConsultancyForm = () => {
               />
             </div>
           </div>
-
           <div className="col-span-full mb-10">
             <label className="block text-sm font-medium leading-6 text-black text-gray-900 dark:text-white">
               Referred By
@@ -906,53 +928,65 @@ const ConsultancyForm = () => {
                 id="referredBy"
                 name="referredBy"
                 placeholder="Enter the name of the referrer"
-                value={formik.values.referredBy}
-                onChange={formik.handleChange}
-                className="block w-full rounded-md border-0 px-3 py-1.5 text-black text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 dark:bg-dark dark:text-white  sm:text-sm sm:leading-6"
+                value={selectedCollege}
+                onChange={handleInputChange}
+                className="block w-full rounded-md border-0 px-3 py-1.5 text-black text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 dark:bg-dark dark:text-white sm:text-sm sm:leading-6"
               />
-              {formik.errors.referredBy && (
-                <p className="mt-1 text-sm text-red-500">
-                  {formik.errors.referredBy}
-                </p>
+              {filteredColleges.length > 0 && (
+                <ul className="mt-2 max-h-40 overflow-y-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
+                  {filteredColleges.map((college, index) => (
+                    <li
+                      key={index}
+                      className="cursor-pointer select-none py-2 pl-3 pr-9 hover:bg-indigo-600 hover:text-white"
+                      onClick={() =>
+                        handleOptionClick(college.NameoftheCollege)
+                      }
+                    >
+                      {college.NameoftheCollege}
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
           </div>
 
           <div className="col-span-full">
-          <label
-            htmlFor="cover-photo"
-            className="block text-sm font-medium leading-6 text-black text-gray-900 dark:text-white"
-          >
-            Upload Resume <span className="text-red-500">*</span>{" "}
-          </label>
-          <div className="mt-2 flex justify-center rounded-lg border-2 border-dashed border-black border-opacity-50  px-6 py-10 text-black dark:border-white">
-            <div className="text-center">
-              <div className="mt-4 flex text-sm leading-6 text-gray-600">
-                <label
-                  htmlFor="resume"
-                  className="relative cursor-pointer rounded-md bg-white font-semibold text-black text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500 dark:bg-dark "
-                >
-                  <span className="">Upload a file</span>
-                  <input
-                    type="file"
-                    id="resume"
-                    name="resume"
-                    onChange={handleFileSelect}
-                    className="sr-only"
-                  />
-                </label>
-                <p className="pl-1">or drag and drop</p>
+            <label
+              htmlFor="cover-photo"
+              className="block text-sm font-medium leading-6 text-black text-gray-900 dark:text-white"
+            >
+              Upload Resume <span className="text-red-500">*</span>{" "}
+            </label>
+            <div className="mt-2 flex justify-center rounded-lg border-2 border-dashed border-black border-opacity-50  px-6 py-10 text-black dark:border-white">
+              <div className="text-center">
+                <div className="mt-4 flex text-sm leading-6 text-gray-600">
+                  <label
+                    htmlFor="resume"
+                    className="relative cursor-pointer rounded-md bg-white font-semibold text-black text-indigo-600 focus-within:outline-none focus-within:ring-2 focus-within:ring-indigo-600 focus-within:ring-offset-2 hover:text-indigo-500 dark:bg-dark "
+                  >
+                    <span className="">Upload a file</span>
+                    <input
+                      type="file"
+                      id="resume"
+                      name="resume"
+                      onChange={handleFileSelect}
+                      className="sr-only"
+                    />
+                  </label>
+                  <p className="pl-1">or drag and drop</p>
+                </div>
+                <p className="text-xs leading-5 text-gray-600">
+                  PDF , Document up to 10MB
+                </p>
+                <div id="file-preview">{selectedResumeName}</div>
               </div>
-              <p className="text-xs leading-5 text-gray-600">
-                PDF , Document up to 10MB
-              </p>
-              <div id="file-preview">{selectedResumeName}</div>
             </div>
+            {formik.errors.resume && formik.touched.resume && (
+              <p className="mt-1 text-sm text-red-500">
+                {formik.errors.resume}
+              </p>
+            )}
           </div>
-          {formik.errors.resume && formik.touched.resume && (
-            <p className="mt-1 text-sm text-red-500">{formik.errors.resume}</p>
-          )}
-        </div>
           <div className="mb-6 mt-6 flex items-center justify-end  gap-x-6">
             <button
               type="button"

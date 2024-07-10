@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import LoaderSmall from "../Loader/LoaderSmall";
 import { useNavigate } from "react-router-dom";
+import baseURL from "../Common/Api"
+
 
 const Login = () => {
   const navigate = useNavigate();
@@ -62,11 +64,15 @@ const Login = () => {
     setShowLoader(true);
     try {
       const response = await axios.post(
-        "https://tekisky-pvt-ltd-backend.vercel.app/user/login",
+        `${baseURL}user/login`,
         { mobileNumber, password }
       );
-      const { token } = response.data;
+      const { token, userType, user } = response.data;
       localStorage.setItem("token", token);
+      localStorage.setItem("userType", userType);
+      localStorage.setItem("userId", user._id);
+      localStorage.setItem("collegeName", user.collegeName || "");
+
       Swal.fire({
         icon: "success",
         title: "Login Successful!",
@@ -74,19 +80,24 @@ const Login = () => {
         showConfirmButton: false,
         timer: 1500,
       });
-      // Redirect to dashboard or home page after successful login
-      navigate("/dashboard"); // Replace '/dashboard' with the desired destination after login
+
+      if (userType === "admin") {
+        navigate("/dashboard");
+      } else if (userType === "teacher") {
+        navigate(`/teacherDashboard/${user._id}`);
+      } else {
+        // Handle other user types if needed
+        console.log("Unknown userType:", userType);
+      }
     } catch (error) {
-      const failedAttempts = JSON.parse(localStorage.getItem("failedAttempts")) || 0;
+      const failedAttempts =
+        JSON.parse(localStorage.getItem("failedAttempts")) || 0;
       const newFailedAttempts = failedAttempts + 1;
       localStorage.setItem("failedAttempts", newFailedAttempts);
 
       if (newFailedAttempts >= 4) {
         const blockedUntil = new Date().getTime() + 24 * 60 * 60 * 1000; // Block for 24 hours
-        localStorage.setItem(
-          "blockInfo",
-          JSON.stringify({ blockedUntil })
-        );
+        localStorage.setItem("blockInfo", JSON.stringify({ blockedUntil }));
         setIsBlocked(true);
         setBlockedTime(blockedUntil);
         Swal.fire({
@@ -110,7 +121,9 @@ const Login = () => {
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
           <h2 className="text-2xl font-bold mb-4">You are blocked!</h2>
-          <p className="mb-2">Too many failed login attempts. Please try again later.</p>
+          <p className="mb-2">
+            Too many failed login attempts. Please try again later.
+          </p>
           <p>
             You will be able to try again at{" "}
             {new Date(blockedTime).toLocaleString()}.

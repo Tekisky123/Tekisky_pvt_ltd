@@ -3,7 +3,35 @@ import { useLocation, Link, useNavigate } from "react-router-dom";
 import logo from "../images/logo/WhatsApp_Image_2024-04-30_at_12.39.09_86de1ffc-removebg-preview.png";
 
 const Header = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [sticky, setSticky] = useState(false);
+  const [navbarOpen, setNavbarOpen] = useState(false);
+  const [openIndex, setOpenIndex] = useState(-1);
+
+  const handleStickyNavbar = () => setSticky(window.scrollY >= 80);
+  const handleSubmenu = (index) =>
+    setOpenIndex(openIndex === index ? -1 : index);
+  const handleMenuItemClick = () => setNavbarOpen(false);
+
+  const hasToken =
+    typeof window !== "undefined" && localStorage.getItem("token");
+  const userId =
+    typeof window !== "undefined" && localStorage.getItem("userId");
+  const userType = localStorage.getItem("userType");
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleStickyNavbar);
+    return () => window.removeEventListener("scroll", handleStickyNavbar);
+  }, []);
+
+  const handleLogout = () => {
+    setNavbarOpen(false);
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    navigate("/");
+  };
+
   const menuData = [
     { id: 1, title: "Home", path: "/" },
     { id: 2, title: "Services", path: "/services" },
@@ -13,32 +41,6 @@ const Header = () => {
     { id: 6, title: "About", path: "/about" },
     { id: 7, title: "Contact Us", path: "/contact-us" },
   ];
-
-  const [navbarOpen, setNavbarOpen] = useState(false);
-  const location = useLocation();
-  const navbarToggleHandler = () => setNavbarOpen(!navbarOpen);
-
-  const [sticky, setSticky] = useState(false);
-  const handleStickyNavbar = () => setSticky(window.scrollY >= 80);
-
-  useEffect(() => {
-    window.addEventListener("scroll", handleStickyNavbar);
-    return () => window.removeEventListener("scroll", handleStickyNavbar);
-  }, []);
-
-  const [openIndex, setOpenIndex] = useState(-1);
-  const handleSubmenu = (index) =>
-    setOpenIndex(openIndex === index ? -1 : index);
-  const handleMenuItemClick = () => setNavbarOpen(false);
-
-  const hasToken =
-    typeof window !== "undefined" && localStorage.getItem("token");
-
-  const handleLogout = () => {
-    setNavbarOpen(false);
-    localStorage.removeItem("token");
-    navigate("/")
-  };
 
   return (
     <>
@@ -54,27 +56,35 @@ const Header = () => {
             <div className="w-80 max-w-full px-4 xl:mr-12">
               <Link
                 to="/"
-                className={`header-logo block w-full ${sticky ? "py-5 lg:py-2" : "py-8"}`}
+                className={`header-logo block w-full ${
+                  sticky ? "py-5 lg:py-2" : "py-8"
+                }`}
               >
-                <img src={logo} alt="" />
+                <img src={logo} alt="Logo" />
               </Link>
             </div>
             <div className="flex w-full items-center justify-between px-4">
               <div>
                 <button
-                  onClick={navbarToggleHandler}
+                  onClick={() => setNavbarOpen(!navbarOpen)}
                   id="navbarToggler"
                   aria-label="Mobile Menu"
                   className="absolute right-4 top-1/2 block translate-y-[-50%] rounded-lg px-3 py-[6px] ring-primary focus:ring-2 lg:hidden"
                 >
                   <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${navbarOpen ? " top-[7px] rotate-45" : " "}`}
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
+                      navbarOpen ? "top-[7px] rotate-45" : ""
+                    }`}
                   />
                   <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${navbarOpen ? "opacity-0 " : " "}`}
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
+                      navbarOpen ? "opacity-0" : ""
+                    }`}
                   />
                   <span
-                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${navbarOpen ? " top-[-8px] -rotate-45" : " "}`}
+                    className={`relative my-1.5 block h-0.5 w-[30px] bg-black transition-all duration-300 dark:bg-white ${
+                      navbarOpen ? "top-[-8px] -rotate-45" : ""
+                    }`}
                   />
                 </button>
                 <nav
@@ -144,15 +154,17 @@ const Header = () => {
                     {hasToken && (
                       <li className="group relative">
                         <Link
-                          to="/dashboard"
+                          to={userType === "admin" ? "/dashboard" : `/teacherDashboard/${userId}`}
                           onClick={handleMenuItemClick}
                           className={`flex py-2 text-base lg:mr-0 lg:inline-flex lg:px-0 lg:py-6 ${
-                            location.pathname === "/dashboard"
+                            location.pathname === (userType === "admin" ? "/dashboard" : `/teacherDashboard/${userId}`)
                               ? "text-primary underline dark:text-white"
                               : "text-dark hover:text-primary dark:text-white/70 dark:hover:text-white"
                           }`}
                         >
-                          Dashboard
+                          {userType === "admin"
+                            ? "Dashboard"
+                            : "User Dashboard"}
                         </Link>
                       </li>
                     )}

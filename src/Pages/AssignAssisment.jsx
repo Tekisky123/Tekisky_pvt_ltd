@@ -5,6 +5,8 @@ import assignmentsData from "../Common/assignmentsData.json";
 import { useNavigate, useParams } from "react-router-dom";
 import { IoMdAlert } from "react-icons/io";
 import { FaClipboardCheck } from "react-icons/fa";
+import baseURL from "../Common/Api"
+
 
 const AssignAssisment = () => {
   const [formData, setFormData] = useState({
@@ -32,7 +34,7 @@ const AssignAssisment = () => {
   const fetchApplicantDetails = async (applicantId) => {
     try {
       const response = await axios.get(
-        `https://tekisky-pvt-ltd-backend.vercel.app/consultancy/getoneuploadresume/${applicantId}`,
+        `${baseURL}consultancy/getoneuploadresume/${applicantId}`,
         {
           headers: {
             Authorization: `${token}`,
@@ -106,7 +108,7 @@ const AssignAssisment = () => {
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const response = await axios.post(
-        `https://tekisky-pvt-ltd-backend.vercel.app/consultancy/assignAssessment/${id}`,
+        `${baseURL}consultancy/assignAssessment/${id}`,
         formData,
         {
           headers: {

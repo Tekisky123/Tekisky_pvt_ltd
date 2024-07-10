@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import jsPDF from "jspdf";
 import "jspdf-autotable";
 import { useParams } from "react-router-dom";
+import baseURL from "../Common/Api"
+
 
 const SingleApplication = () => {
     const [application, setApplication] = useState(null);
@@ -15,7 +17,7 @@ const SingleApplication = () => {
       const fetchApplication = async () => {
         try {
           const response = await axios.get(
-            `https://tekisky-pvt-ltd-backend.vercel.app/consultancy/getoneuploadresume/${id}`
+            `${baseURL}consultancy/getoneuploadresume/${id}`
           );
           setApplication(response.data);
         } catch (error) {

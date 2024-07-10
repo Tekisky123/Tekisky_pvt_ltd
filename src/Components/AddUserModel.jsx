@@ -2,19 +2,17 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 import LoaderSmall from "../Loader/LoaderSmall";
+import CollegeNames from "../Common/CollegeNames.json";
+import baseURL from "../Common/Api"
 
-
-
-const AddUserModel = ({
-  showModal,
-  onClose,
-  fetchUsers,
-}) => {
+const AddUserModel = ({ showModal, onClose, fetchUsers }) => {
   const [formData, setFormData] = useState({
     fullName: "",
     mobileNumber: "",
     email: "",
     password: "",
+    userType: "",
+    collegeName: "",
   });
 
   const [errors, setErrors] = useState({
@@ -25,6 +23,8 @@ const AddUserModel = ({
 
   const [showLoader, setShowLoader] = useState(false);
   const [token, setToken] = useState("");
+  const [suggestions, setSuggestions] = useState([]); // State for college name suggestions
+
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     setToken(storedToken || "");
@@ -41,17 +41,39 @@ const AddUserModel = ({
       ...prevErrors,
       [name]: "",
     }));
+
+    if (name === "collegeName") {
+      if (value.length > 0) {
+        const filteredSuggestions = CollegeNames["Nanded-District"].filter(
+          (college) =>
+            college.NameoftheCollege.toLowerCase().includes(value.toLowerCase())
+        );
+        setSuggestions(filteredSuggestions);
+      } else {
+        setSuggestions([]);
+      }
+    }
+  };
+
+  const handleSelectSuggestion = (suggestion) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      collegeName: suggestion.NameoftheCollege,
+    }));
+    setSuggestions([]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowLoader(true);
+
     // Validate fullName
     if (!formData.fullName.trim()) {
       setErrors((prevErrors) => ({
         ...prevErrors,
         fullName: "Full Name is required",
       }));
+      setShowLoader(false);
       return;
     }
 
@@ -64,6 +86,7 @@ const AddUserModel = ({
         ...prevErrors,
         mobileNumber: "Please enter a valid 10-digit mobile number",
       }));
+      setShowLoader(false);
       return;
     }
 
@@ -73,19 +96,21 @@ const AddUserModel = ({
         ...prevErrors,
         email: "Please enter a valid email address",
       }));
+      setShowLoader(false);
       return;
     }
 
     try {
       const response = await axios.post(
-        "https://tekisky-pvt-ltd-backend.vercel.app/user/create",
+        `${baseURL}user/create`,
         formData,
         {
           headers: {
             Authorization: token,
           },
-        },
+        }
       );
+
       if (response.status === 201) {
         Swal.fire("Success!", "User added successfully.", "success");
         onClose();
@@ -94,6 +119,8 @@ const AddUserModel = ({
           mobileNumber: "",
           email: "",
           password: "",
+          userType: "",
+          collegeName: "",
         });
       } else {
         Swal.fire("Error!", "Failed to add user.", "error");
@@ -103,8 +130,9 @@ const AddUserModel = ({
       const errorMessage = error.response.data.error || "Failed to add user.";
       Swal.fire("Error!", errorMessage, "error");
     }
+
     setShowLoader(false);
-    fetchUsers()
+    fetchUsers();
   };
 
   return (
@@ -113,7 +141,7 @@ const AddUserModel = ({
         <div className="model-body fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
           {showLoader && <LoaderSmall />}
 
-          <div className="student-model rounded-lg border bg-white bg-white  p-8  shadow-lg dark:bg-dark dark:text-white">
+          <div className="student-model rounded-lg border bg-white p-8 shadow-lg dark:bg-dark dark:text-white">
             <h2 className="mb-4 text-2xl font-semibold">Add User</h2>
             <form onSubmit={handleSubmit}>
               <div className="mb-4">
@@ -125,7 +153,7 @@ const AddUserModel = ({
                   name="fullName"
                   value={formData.fullName}
                   onChange={handleChange}
-                  className="w-full rounded-md border bg-white px-4  py-2  dark:bg-dark dark:text-white "
+                  className="w-full rounded-md border bg-white px-4 py-2 dark:bg-dark dark:text-white"
                 />
                 {errors.fullName && (
                   <p className="text-red-500">{errors.fullName}</p>
@@ -142,7 +170,7 @@ const AddUserModel = ({
                   value={formData.mobileNumber}
                   onChange={handleChange}
                   maxLength={10}
-                  className="w-full rounded-md border bg-white px-4  py-2  dark:bg-dark dark:text-white "
+                  className="w-full rounded-md border bg-white px-4 py-2 dark:bg-dark dark:text-white"
                 />
                 {errors.mobileNumber && (
                   <p className="text-red-500">{errors.mobileNumber}</p>
@@ -158,7 +186,7 @@ const AddUserModel = ({
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full rounded-md border bg-white px-4  py-2  dark:bg-dark dark:text-white "
+                  className="w-full rounded-md border bg-white px-4 py-2 dark:bg-dark dark:text-white"
                 />
                 {errors.email && <p className="text-red-500">{errors.email}</p>}
               </div>
@@ -172,9 +200,53 @@ const AddUserModel = ({
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full rounded-md border bg-white px-4  py-2  dark:bg-dark dark:text-white "
+                  className="w-full rounded-md border bg-white px-4 py-2 dark:bg-dark dark:text-white"
                 />
               </div>
+
+              <div className="mb-4">
+                <label className="mb-2 block text-body-color text-gray-700 dark:text-body-color-dark">
+                  User Type
+                </label>
+                <select
+                  name="userType"
+                  value={formData.userType}
+                  onChange={handleChange}
+                  className="w-full rounded-md border bg-white px-4 py-2 dark:bg-dark dark:text-white"
+                >
+                  <option value="">Select User Type</option>
+                  <option value="admin">Admin</option>
+                  <option value="teacher">Teacher</option>
+                </select>
+              </div>
+
+              {formData.userType === "teacher" && (
+                <div className="mb-4 relative">
+                  <label className="mb-2 block text-body-color text-gray-700 dark:text-body-color-dark">
+                    College Name
+                  </label>
+                  <input
+                    type="text"
+                    name="collegeName"
+                    value={formData.collegeName}
+                    onChange={handleChange}
+                    className="w-full rounded-md border bg-white px-4 py-2 dark:bg-dark dark:text-white"
+                  />
+                  {suggestions.length > 0 && (
+                    <ul className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
+                      {suggestions.map((suggestion, index) => (
+                        <li
+                          key={index}
+                          onClick={() => handleSelectSuggestion(suggestion)}
+                          className="cursor-pointer p-2 hover:bg-gray-200"
+                        >
+                          {suggestion.NameoftheCollege}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
 
               <div className="flex justify-end">
                 <button
