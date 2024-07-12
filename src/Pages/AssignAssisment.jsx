@@ -5,8 +5,7 @@ import assignmentsData from "../Common/assignmentsData.json";
 import { useNavigate, useParams } from "react-router-dom";
 import { IoMdAlert } from "react-icons/io";
 import { FaClipboardCheck } from "react-icons/fa";
-import baseURL from "../Common/Api"
-
+import baseURL from "../Common/Api";
 
 const AssignAssisment = () => {
   const [formData, setFormData] = useState({
@@ -14,6 +13,7 @@ const AssignAssisment = () => {
     assessmentTask: "",
     assessmentDeadline: "",
     assessmentDescription: "",
+    assessmentNote: "", // New field for assessment note
     selectedAssessmentCategory: null,
   });
 
@@ -70,7 +70,7 @@ const AssignAssisment = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "customTask") {
+    if (name === "customTask" || name === "assessmentDeadline" || name === "assessmentNote") {
       setFormData({
         ...formData,
         [name]: value,
@@ -243,6 +243,20 @@ const AssignAssisment = () => {
             className="w-full border p-2"
             min={new Date().toISOString().split("T")[0]}
             value={formData.assessmentDeadline}
+            onChange={handleChange}
+          />
+        </div>
+        <div className="mb-4">
+          <label htmlFor="assessmentNote" className="mb-2 block">
+            Assessment Note:
+          </label>
+          <input
+            type="text"
+            id="assessmentNote"
+            name="assessmentNote"
+            className="w-full border p-2"
+            placeholder="Assessment Note"
+            value={formData.assessmentNote}
             onChange={handleChange}
           />
         </div>
